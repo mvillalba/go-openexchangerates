@@ -1,23 +1,24 @@
 package oxr
 
 import (
-//    "math/big"
     "encoding/json"
     "io/ioutil"
     "net/http"
     "fmt"
 )
 
-var ApiUrl = "openexchangerates.org/api"
-var ErrNotFound = "not_found"
-var ErrNotAvailable = "not_available"
-var ErrMissingAppId = "missing_app_id"
-var ErrInvalidAppId = "invalid_app_id"
-var ErrNotAllowed = "not_allowed"
-var ErrAccessRestricted = "access_restricted"
-var ErrInvalidBase = "invalid_base"
-var ProtoHttp = "http"
-var ProtoHttps = "https"
+var (
+    ErrNotFound = "not_found"
+    ErrNotAvailable = "not_available"
+    ErrMissingAppId = "missing_app_id"
+    ErrInvalidAppId = "invalid_app_id"
+    ErrNotAllowed = "not_allowed"
+    ErrAccessRestricted = "access_restricted"
+    ErrInvalidBase = "invalid_base"
+    ProtoHttp = "http"
+    ProtoHttps = "https"
+    ApiUrl = "openexchangerates.org/api"
+)
 
 type ApiError struct {
     IsError     bool    `json:"error"`
