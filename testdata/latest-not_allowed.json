@@ -1,0 +1,6 @@
+{
+  "error": true,
+  "status": 403,
+  "message": "not_allowed",
+  "description": "Changing `base` currency is only available for Enterprise and Unlimited clients - please upgrade, or contact support@openexchangerates.org with any questions. Thanks!"
+}

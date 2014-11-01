@@ -1,0 +1,6 @@
+{
+  "error": true,
+  "status": 404,
+  "message": "not_found",
+  "description": "Requested API route `404.json` could not be matched - please check and try again, read the Documentation, or contact support@openexchangerates.org."
+}

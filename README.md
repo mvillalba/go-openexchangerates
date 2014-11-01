@@ -10,3 +10,5 @@ Thin Go wrapper for [OpenExchangeRates](https://openexchangerates.org/)'s API.
 
 
 ## Usage
+
+    See oxrdemo/main.go for usage examples.
