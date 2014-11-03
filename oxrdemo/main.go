@@ -22,6 +22,8 @@ func main() {
     historical(client)
     latestWithOptions(client)
     historicalWithOptions(client)
+    timeSeries(client)
+    timeSeriesWithOptions(client)
     convert(client)
 }
 
@@ -127,6 +129,65 @@ func historicalWithOptions(client *oxr.ApiClient) {
 
     for k := range r.Rates {
         fmt.Println("BTC/" + k, r.Rates[k])
+    }
+}
+
+func timeSeries(client *oxr.ApiClient) {
+    fmt.Println()
+    fmt.Println("=======================================")
+    fmt.Println("List historical exchange rates in bulk")
+    fmt.Println("for the first 7 days of 2014.")
+    fmt.Println("=======================================")
+
+    r, err := client.TimeSeries("2014-01-01", "2014-01-07")
+    if err != nil {
+        fmt.Println("ERROR:", err)
+        return
+    }
+
+    fmt.Println("Disclaimer:", r.Disclaimer)
+    fmt.Println("License:", r.License)
+    fmt.Println("Start:", r.StartDate)
+    fmt.Println("End:", r.EndDate)
+    fmt.Println("Base:", r.Base)
+    fmt.Println("Rates:")
+
+    for k := range r.Rates {
+        fmt.Println("  " + k + ":")
+        for kk := range r.Rates[k] {
+            fmt.Println("    " + kk, r.Rates[k][kk])
+        }
+    }
+}
+
+func timeSeriesWithOptions(client *oxr.ApiClient) {
+    fmt.Println()
+    fmt.Println("=======================================")
+    fmt.Println("List historical exchange rates in bulk")
+    fmt.Println("for the first 7 days of 2014 for base")
+    fmt.Println("symbol BTC and quote symbols AUD, THB,")
+    fmt.Println("and SEK.")
+    fmt.Println("=======================================")
+
+    syms := []string{"AUD", "THB", "SEK"}
+    r, err := client.TimeSeriesWithOptions("2014-01-01", "2014-01-07", "BTC", syms)
+    if err != nil {
+        fmt.Println("ERROR:", err)
+        return
+    }
+
+    fmt.Println("Disclaimer:", r.Disclaimer)
+    fmt.Println("License:", r.License)
+    fmt.Println("Start:", r.StartDate)
+    fmt.Println("End:", r.EndDate)
+    fmt.Println("Base:", r.Base)
+    fmt.Println("Rates:")
+
+    for k := range r.Rates {
+        fmt.Println("  " + k + ":")
+        for kk := range r.Rates[k] {
+            fmt.Println("    " + kk, r.Rates[k][kk])
+        }
     }
 }
 

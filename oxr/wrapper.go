@@ -17,6 +17,7 @@ var (
     ErrAccessRestricted = "access_restricted"
     ErrInvalidBase = "invalid_base"
     ErrInvalidCurrency = "invalid_currency"
+    ErrInvalidDateRange = "invalid_date_range"
     ProtoHttp = "http"
     ProtoHttps = "https"
     ApiUrl = "openexchangerates.org/api"
@@ -39,6 +40,15 @@ type Rates struct {
     Timestamp   int                     `json:"timestamp"`
     Base        string                  `json:"base"`
     Rates       map[string]json.Number  `json:"rates"`
+}
+
+type RatesSeries struct {
+    Disclaimer  string                              `json:"disclaimer"`
+    License     string                              `json:"license"`
+    StartDate   string                              `json:"start_date"`
+    EndDate     string                              `json:"end_date"`
+    Base        string                              `json:"base"`
+    Rates       map[string]map[string]json.Number   `json:"rates"`
 }
 
 type Conversion struct {
@@ -100,6 +110,34 @@ func (c *ApiClient) Historical(date string) (*Rates, error) {
 
 func (c *ApiClient) HistoricalWithOptions(date string, base string, symbols []string) (*Rates, error) {
     return c.rates("historical/" + date + ".json", base, symbols)
+}
+
+func (c *ApiClient) TimeSeries(start string, end string) (*RatesSeries, error) {
+    return c.TimeSeriesWithOptions(start, end, "USD", nil)
+}
+
+func (c *ApiClient) TimeSeriesWithOptions(start string, end string, base string, symbols []string) (*RatesSeries, error) {
+    args := make(map[string]string)
+
+    args["start"] = start
+    args["end"] = end
+
+    if base != "USD" && base != "" {
+        args["base"] = base
+    }
+
+    if symbols != nil {
+        args["symbols"] = strings.Join(symbols, ",")
+    }
+
+    data, err := c.apiCall("time-series.json", args)
+    if err != nil { return nil, err }
+
+    var r RatesSeries
+    err = json.Unmarshal(data, &r)
+    if err != nil { return nil, err }
+
+    return &r, nil
 }
 
 func (c *ApiClient) Convert(amount string, from string, to string) (*Conversion, error) {
