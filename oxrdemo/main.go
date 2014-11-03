@@ -20,6 +20,8 @@ func main() {
     currencies(client)
     latest(client)
     historical(client)
+    latestWithOptions(client)
+    historicalWithOptions(client)
 }
 
 func currencies(client *oxr.ApiClient) {
@@ -50,10 +52,39 @@ func latest(client *oxr.ApiClient) {
         fmt.Println("ERROR:", err)
         return
     }
+
     fmt.Println("Disclaimer:", r.Disclaimer)
     fmt.Println("License:", r.License)
     fmt.Println("Timestamp:", r.Timestamp)
     fmt.Println("Base:", r.Base)
+    fmt.Println("")
+
+    for k := range r.Rates {
+        fmt.Println("USD/" + k, r.Rates[k])
+    }
+}
+
+func latestWithOptions(client *oxr.ApiClient) {
+    fmt.Println()
+    fmt.Println("=======================================")
+    fmt.Println("List latest exchange rates for base")
+    fmt.Println("smybol BTC and quote symbols EUR, NZD,")
+    fmt.Println("USD, ARS, and JPY.")
+    fmt.Println("=======================================")
+
+    syms := []string{"EUR", "NZD", "USD", "ARS", "JPY"}
+    r, err := client.LatestWithOptions("BTC", syms)
+    if err != nil {
+        fmt.Println("ERROR:", err)
+        return
+    }
+
+    fmt.Println("Disclaimer:", r.Disclaimer)
+    fmt.Println("License:", r.License)
+    fmt.Println("Timestamp:", r.Timestamp)
+    fmt.Println("Base:", r.Base)
+    fmt.Println("")
+
     for k := range r.Rates {
         fmt.Println("USD/" + k, r.Rates[k])
     }
@@ -71,7 +102,29 @@ func historical(client *oxr.ApiClient) {
         fmt.Println("ERROR:", err)
         return
     }
+
     for k := range r.Rates {
         fmt.Println("USD/" + k, r.Rates[k])
+    }
+}
+
+func historicalWithOptions(client *oxr.ApiClient) {
+    fmt.Println()
+    fmt.Println("=======================================")
+    fmt.Println("List latest exchange rates as they were")
+    fmt.Println("on 2014-01-01 for base symbol BTC and")
+    fmt.Println("quote symbols EUR, NZD, USD, ARS, and")
+    fmt.Println("JPY.")
+    fmt.Println("=======================================")
+
+    syms := []string{"EUR", "NZD", "USD", "ARS", "JPY"}
+    r, err := client.HistoricalWithOptions("2014-01-01", "BTC", syms)
+    if err != nil {
+        fmt.Println("ERROR:", err)
+        return
+    }
+
+    for k := range r.Rates {
+        fmt.Println("BTC/" + k, r.Rates[k])
     }
 }

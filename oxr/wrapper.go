@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "net/http"
+    "strings"
     "fmt"
 )
 
@@ -65,15 +66,33 @@ func (c *ApiClient) Currencies() (map[string]string, error) {
 }
 
 func (c *ApiClient) Latest() (*Rates, error) {
-    return c.rates("latest")
+    return c.LatestWithOptions("USD", nil)
+}
+
+func (c *ApiClient) LatestWithOptions(base string, symbols []string) (*Rates, error) {
+    return c.rates("latest", base, symbols)
 }
 
 func (c *ApiClient) Historical(date string) (*Rates, error) {
-    return c.rates("historical/" + date)
+    return c.HistoricalWithOptions(date, "USD", nil)
 }
 
-func (c *ApiClient) rates(endpoint string) (*Rates, error) {
-    data, err := c.apiCall(endpoint, nil)
+func (c *ApiClient) HistoricalWithOptions(date string, base string, symbols []string) (*Rates, error) {
+    return c.rates("historical/" + date, base, symbols)
+}
+
+func (c *ApiClient) rates(endpoint string, base string, symbols []string) (*Rates, error) {
+    args := make(map[string]string)
+
+    if base != "USD" && base != "" {
+        args["base"] = base
+    }
+
+    if symbols != nil {
+        args["symbols"] = strings.Join(symbols, ",")
+    }
+
+    data, err := c.apiCall(endpoint, args)
     if err != nil { return nil, err }
 
     var r Rates
