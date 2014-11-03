@@ -4,9 +4,9 @@ import "fmt"
 
 var (
     VersionMajor = 0
-    VersionMinor = 1
+    VersionMinor = 2
     VersionRevision = 0
-    VersionTag = ""
+    VersionTag = "dev"
     Version = fmt.Sprintf("%v.%v.%v", VersionMajor, VersionMinor, VersionRevision)
     AuthorName = "Martín Raúl Villalba"
     AuthorEMail = "martin@martinvillalba.com"
