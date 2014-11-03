@@ -17,8 +17,6 @@ See oxrdemo/main.go for usage examples.
 ## TODO
 
  * Test, test, test.
- * Premium features.
- * Add version information and make a release.
 
 ## Donate
 
