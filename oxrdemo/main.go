@@ -17,6 +17,7 @@ func main() {
     client := oxr.New(os.Args[1])
 
     // Fun stuff
+    version()
     currencies(client)
     latest(client)
     historical(client)
@@ -25,6 +26,11 @@ func main() {
     timeSeries(client)
     timeSeriesWithOptions(client)
     convert(client)
+}
+
+func version() {
+    fmt.Println("OXR Interface Version:", oxr.Version)
+    fmt.Println("OXR Interface Author:", oxr.Author)
 }
 
 func currencies(client *oxr.ApiClient) {
