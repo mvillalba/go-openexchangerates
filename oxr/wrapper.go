@@ -16,6 +16,7 @@ var (
     ErrNotAllowed = "not_allowed"
     ErrAccessRestricted = "access_restricted"
     ErrInvalidBase = "invalid_base"
+    ErrInvalidCurrency = "invalid_currency"
     ProtoHttp = "http"
     ProtoHttps = "https"
     ApiUrl = "openexchangerates.org/api"
@@ -40,6 +41,26 @@ type Rates struct {
     Rates       map[string]json.Number  `json:"rates"`
 }
 
+type Conversion struct {
+    Disclaimer  string                  `json:"disclaimer"`
+    License     string                  `json:"license"`
+    Request     ConversionRequest       `json:"request"`
+    Meta        ConversionMeta          `json:"meta"`
+    Response    json.Number             `json:"response"`
+}
+
+type ConversionRequest struct {
+    Query       string                  `json:"query"`
+    Amount      json.Number             `json:"amount"`
+    From        string                  `json:"from"`
+    To          string                  `json:"to"`
+}
+
+type ConversionMeta struct {
+    Timestamp   int                     `json:"timestamp"`
+    Rate        json.Number             `json:"rate"`
+}
+
 type ApiClient struct {
     appId       string
     proto       string
@@ -55,7 +76,7 @@ func NewWithOptions(appId string, proto string, url string) *ApiClient {
 }
 
 func (c *ApiClient) Currencies() (map[string]string, error) {
-    data, err := c.apiCall("currencies", nil)
+    data, err := c.apiCall("currencies.json", nil)
     if err != nil { return nil, err }
 
     var curr map[string]string
@@ -70,7 +91,7 @@ func (c *ApiClient) Latest() (*Rates, error) {
 }
 
 func (c *ApiClient) LatestWithOptions(base string, symbols []string) (*Rates, error) {
-    return c.rates("latest", base, symbols)
+    return c.rates("latest.json", base, symbols)
 }
 
 func (c *ApiClient) Historical(date string) (*Rates, error) {
@@ -78,7 +99,19 @@ func (c *ApiClient) Historical(date string) (*Rates, error) {
 }
 
 func (c *ApiClient) HistoricalWithOptions(date string, base string, symbols []string) (*Rates, error) {
-    return c.rates("historical/" + date, base, symbols)
+    return c.rates("historical/" + date + ".json", base, symbols)
+}
+
+func (c *ApiClient) Convert(amount string, from string, to string) (*Conversion, error) {
+    ep := fmt.Sprintf("convert/%v/%v/%v", amount, from, to)
+    data, err := c.apiCall(ep, nil)
+    if err != nil { return nil, err }
+
+    var conv Conversion
+    err = json.Unmarshal(data, &conv)
+    if err != nil { return nil, err }
+
+    return &conv, nil
 }
 
 func (c *ApiClient) rates(endpoint string, base string, symbols []string) (*Rates, error) {
@@ -104,7 +137,7 @@ func (c *ApiClient) rates(endpoint string, base string, symbols []string) (*Rate
 
 func (c *ApiClient) apiCall(endpoint string, args map[string]string) ([]byte, error) {
     // Build URL
-    url := fmt.Sprintf("%v://%v/%v.json?app_id=%v", c.proto, c.url, endpoint, c.appId)
+    url := fmt.Sprintf("%v://%v/%v?app_id=%v", c.proto, c.url, endpoint, c.appId)
     for k := range args {
         url = fmt.Sprintf("%v&%v=%v", url, k, args[k])
     }

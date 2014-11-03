@@ -22,6 +22,7 @@ func main() {
     historical(client)
     latestWithOptions(client)
     historicalWithOptions(client)
+    convert(client)
 }
 
 func currencies(client *oxr.ApiClient) {
@@ -127,4 +128,27 @@ func historicalWithOptions(client *oxr.ApiClient) {
     for k := range r.Rates {
         fmt.Println("BTC/" + k, r.Rates[k])
     }
+}
+
+func convert(client *oxr.ApiClient) {
+    fmt.Println()
+    fmt.Println("=======================================")
+    fmt.Println("Convert 10.123456789 BTC to UYU.")
+    fmt.Println("=======================================")
+
+    c, err := client.Convert("10.123456789", "BTC", "UYU")
+    if err != nil {
+        fmt.Println("ERROR:", err)
+        return
+    }
+
+    fmt.Println("Disclaimer:", c.Disclaimer)
+    fmt.Println("License:", c.License)
+    fmt.Println("Request / Query:", c.Request.Query)
+    fmt.Println("Request / Amount:", c.Request.Amount)
+    fmt.Println("Request / From:", c.Request.From)
+    fmt.Println("Request / To:", c.Request.To)
+    fmt.Println("Meta / Timestamp:", c.Meta.Timestamp)
+    fmt.Println("Meta / Rate:", c.Meta.Rate)
+    fmt.Println("Response:", c.Response)
 }
