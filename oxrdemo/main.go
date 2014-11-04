@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/mvillalba/openexchangerates/oxr"
+    "github.com/mvillalba/go-openexchangerates/oxr"
     "os"
     "fmt"
 )

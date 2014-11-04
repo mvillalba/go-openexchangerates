@@ -6,7 +6,7 @@ Thin Go wrapper for [OpenExchangeRates](https://openexchangerates.org/)'s API.
 
 ## Install
 
-    go get github.com/mvillalba/openexchangerates
+    go get github.com/mvillalba/go-openexchangerates/oxr
 
 
 ## Usage
@@ -25,7 +25,7 @@ development? Feel free to donate through any of the following options:
 
 Bitcoin: **1Jr5qJoDpHpCCn9YppiDMGBAmthhZfpUWs**
 
-[![Flattr this](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=mvillalba&url=https%3A%2F%2Fgithub.com%2Fmvillalba%2Fopenexchangerates%2F)
+[![Flattr this](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=mvillalba&url=https%3A%2F%2Fgithub.com%2Fmvillalba%2Fgo-openexchangerates%2F)
 
 [![Gratipay](https://img.shields.io/gratipay/mvillalba.svg)](https://gratipay.com/mvillalba/)
 
