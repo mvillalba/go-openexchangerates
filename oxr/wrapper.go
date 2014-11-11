@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "net/http"
+    "net/url"
     "strings"
     "fmt"
 )
@@ -75,6 +76,7 @@ type ApiClient struct {
     appId       string
     proto       string
     url         string
+    client      *http.Client
 }
 
 func New(appId string) *ApiClient {
@@ -82,7 +84,7 @@ func New(appId string) *ApiClient {
 }
 
 func NewWithOptions(appId string, proto string, url string) *ApiClient {
-    return &ApiClient{appId: appId, proto: proto, url: url}
+    return &ApiClient{appId: appId, proto: proto, url: url, client: &http.Client{}}
 }
 
 func (c *ApiClient) Currencies() (map[string]string, error) {
@@ -117,17 +119,14 @@ func (c *ApiClient) TimeSeries(start string, end string) (*RatesSeries, error) {
 }
 
 func (c *ApiClient) TimeSeriesWithOptions(start string, end string, base string, symbols []string) (*RatesSeries, error) {
-    args := make(map[string]string)
-
-    args["start"] = start
-    args["end"] = end
-
+    args := url.Values{}
+    args.Add("start", start)
+    args.Add("end", end)
     if base != "USD" && base != "" {
-        args["base"] = base
+        args.Add("base", base)
     }
-
     if symbols != nil {
-        args["symbols"] = strings.Join(symbols, ",")
+        args.Add("symbols", strings.Join(symbols, ","))
     }
 
     data, err := c.apiCall("time-series.json", args)
@@ -153,14 +152,12 @@ func (c *ApiClient) Convert(amount string, from string, to string) (*Conversion,
 }
 
 func (c *ApiClient) rates(endpoint string, base string, symbols []string) (*Rates, error) {
-    args := make(map[string]string)
-
+    args := url.Values{}
     if base != "USD" && base != "" {
-        args["base"] = base
+        args.Add("base", base)
     }
-
     if symbols != nil {
-        args["symbols"] = strings.Join(symbols, ",")
+        args.Add("symbols", strings.Join(symbols, ","))
     }
 
     data, err := c.apiCall(endpoint, args)
@@ -173,15 +170,16 @@ func (c *ApiClient) rates(endpoint string, base string, symbols []string) (*Rate
     return &r, nil
 }
 
-func (c *ApiClient) apiCall(endpoint string, args map[string]string) ([]byte, error) {
+func (c *ApiClient) apiCall(endpoint string, args url.Values) ([]byte, error) {
     // Build URL
-    url := fmt.Sprintf("%v://%v/%v?app_id=%v", c.proto, c.url, endpoint, c.appId)
-    for k := range args {
-        url = fmt.Sprintf("%v&%v=%v", url, k, args[k])
-    }
+    url := fmt.Sprintf("%v://%v/%v?app_id=%v&%v", c.proto, c.url, endpoint, c.appId, args.Encode())
+
+    // Build request
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil { return nil, err }
 
     // Make request
-    resp, err := http.Get(url)
+    resp, err := c.client.Do(req)
     if err != nil { return nil, err }
 
     // Retrieve raw JSON response
