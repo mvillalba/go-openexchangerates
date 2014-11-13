@@ -9,7 +9,7 @@ import (
     "fmt"
 )
 
-var (
+const (
     ErrNotFound = "not_found"
     ErrNotAvailable = "not_available"
     ErrMissingAppId = "missing_app_id"
